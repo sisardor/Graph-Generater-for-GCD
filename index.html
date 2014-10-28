@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3 Test</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<style type="text/css">
+		
+			div.bar {
+				display: inline-block;
+				width: 20px;
+				height: 75px;	/* Gets overriden by D3-assigned height below */
+				margin-right: 2px;
+				background-color: teal;
+			}
+			.axis path,
+			.axis line {
+			    fill: none;
+			    stroke: black;
+			    shape-rendering: crispEdges;
+			}
+			.axis text {
+			    font-family: sans-serif;
+			    font-size: 11px;
+			}
+		
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			var dataset = [];  						 //Initialize empty array
+			for (var i = 0; i < 25; i++) {			 //Loop 25 times
+				var newNumber = Math.random() * 30;  //New random number (0-30)
+				dataset = dataset.concat(newNumber); //Add new number to array
+			}
+			var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+							11, 12, 15, 20, 18, 117, 16, 18, 23, 195 ];
+			
+			//Width and height
+			var margin = {top: 20, right: 20, bottom: 30, left: 40},
+			    width = 660 - margin.left - margin.right,
+			    height = 300 - margin.top - margin.bottom;
+			
+			var barPadding = 1;  // <-- New!
+			var padding = 30;
+			//Create scale functions
+			var xScale = d3.scale.linear()
+								 .domain([0, d3.max(dataset, function(d) { return d; })])
+								 .range([padding, width - padding * 2]);
+
+			var yScale = d3.scale.linear()
+								 .domain([0, 1])
+								 .range([height - padding, padding]);
+
+			var y = d3.scale.linear().range([height, 0]);
+
+			var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+
+			var yAxis = d3.svg.axis()
+                		.scale(yScale)
+                  		.orient("left")
+                  		.ticks(5);
+            var formatAsPercentage = d3.format(".0%");
+            yAxis.tickFormat(formatAsPercentage);
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr('width', width + margin.left + margin.right)
+						.attr('height', height + margin.top + margin.bottom)
+						.append("g")
+    					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			svg.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr("x", function (d,i) {
+					return i * (width / dataset.length);
+				})
+				.attr("y", function(d) {
+				    return y(d); //h - (d * 4);  //Height minus data value
+				})
+				.attr("width", width / dataset.length - barPadding)
+				.attr("height", function(d){ return height - y(d) })
+				.attr("fill", "teal");
+
+			// svg.selectAll("text")
+			// 	.data(dataset)
+			// 	.enter()
+			// 	.append("text")
+			// 	.text(function(d){
+			// 		return d;
+			// 	})
+			// 	.attr("x", function(d, i) {
+			//         return i * (w / dataset.length) + 5;
+			//    	})
+			//    	.attr("y", function(d) {
+			//     	return h - (d * 4) + 15;
+			//    	})
+			//    	.attr("font-family", "sans-serif")
+			//     .attr("font-size", "11px")
+			//     .attr("fill", "white");
+
+			// svg.append("g")
+			// 	.attr("class", "axis")
+			//     .attr("transform", "translate(5," + (height - padding) + ")")
+			//     .call(xAxis);
+			// svg.append("g")
+			//     .attr("class", "axis")
+			//     .attr("transform", "translate(" + 35 + ",0)")
+			//     .call(yAxis);
+
+		</script>
+
+	</body>
+</html>
